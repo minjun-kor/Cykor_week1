@@ -1,0 +1,68 @@
+{
+    "version": "2.0.0",
+    "runner": "terminal",
+    "type": "shell",
+    "echoCommand": true,
+    "presentation": { "reveal": "always" },
+    "tasks": [
+        // C++ 컴파일
+        {
+            "label": "save and compile for C++",
+            "command": "g++ -std=c++23",
+            "args": [
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": {
+                "fileLocation": [
+                    "relative",
+                    "${workspaceRoot}"
+                ],
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+            }
+        },
+        // C 컴파일
+        {
+            "label": "save and compile for C",
+            "command": "gcc -std=c23",
+            "args": [
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": {
+                "fileLocation": [
+                    "relative",
+                    "${workspaceRoot}"
+                ],
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+            }
+        },
+        // 바이너리 실행 (Windows)
+        {
+            "label": "execute",
+            "command": "cmd",
+            "group": { "kind": "test", "isDefault": true },
+            "args": [
+                "/C", "${fileDirname}\\${fileBasenameNoExtension}"
+            ]
+        }
+    ]
+}
