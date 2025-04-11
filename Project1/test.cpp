@@ -37,6 +37,7 @@ char    stack_info[STACK_SIZE][20];     // Call Stack 요소에 대한 설명을 저장하�
 int SP = -1;
 int FP = -1;
 
+void push(char name[20], int value);
 void func1(int arg1, int arg2, int arg3);
 void func2(int arg1, int arg2);
 void func3(int arg1);
@@ -72,6 +73,9 @@ void print_stack()
     printf("================================\n\n");
 }
 
+void push(char name[20], int value) {
+
+}
 
 //func 내부는 자유롭게 추가해도 괜찮으나, 아래의 구조를 바꾸지는 마세요
 void func1(int arg1, int arg2, int arg3)
