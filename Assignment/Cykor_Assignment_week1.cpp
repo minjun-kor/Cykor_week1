@@ -25,6 +25,9 @@
 
 int     call_stack[STACK_SIZE];         // Call Stack을 저장하는 배열
 char    stack_info[STACK_SIZE][20];     // Call Stack 요소에 대한 설명을 저장하는 배열
+char    values_name[4][20] = { "Return Address" ,"arg1", "arg2", "arg3" };
+char    func_name[3][10] = {"func1 SFP", "func2 SFP" , "func3 SFP" };
+char    name[4][20] = { "var_1", "var_2" , "var_3" , "var_4" };
 
 /*  SP (Stack Pointer), FP (Frame Pointer)
 
@@ -74,7 +77,11 @@ void print_stack()
 }
 
 void push(char name[20], int value) {
-
+    SP += 1;
+    for (int i = 0;name[i] != 0;i++) {
+        stack_info[SP][i] = name[i];
+    }
+    call_stack[SP] = value;
 }
 
 //func 내부는 자유롭게 추가해도 괜찮으나, 아래의 구조를 바꾸지는 마세요
@@ -83,6 +90,18 @@ void func1(int arg1, int arg2, int arg3)
     int var_1 = 100;
 
     // func1의 스택 프레임 형성 (함수 프롤로그 + push)
+
+    // 함수 프롤로그
+    push(values_name[3], arg3);
+    push(values_name[2], arg2);
+    push(values_name[1], arg1);
+    push(values_name[0], -1);
+    push(func_name[0], -1);
+    FP = SP;
+
+    //지역 변수 push
+    push(name[0], var_1);
+
     print_stack();
     func2(11, 13);
     // func2의 스택 프레임 제거 (함수 에필로그 + pop)
