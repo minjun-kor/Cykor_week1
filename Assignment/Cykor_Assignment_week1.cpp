@@ -41,6 +41,7 @@ int SP = -1;
 int FP = -1;
 
 void push(char name[20], int value);
+void pop();
 void func1(int arg1, int arg2, int arg3);
 void func2(int arg1, int arg2);
 void func3(int arg1);
@@ -84,6 +85,16 @@ void push(char name[20], int value) {
     call_stack[SP] = value;
 }
 
+void pop() {
+
+    for (int i = 0; stack_info[SP][i] != 0; i++) {
+        stack_info[SP][i] = 0;
+    }
+    call_stack[SP] = 0;
+
+    SP -= 1;
+}
+
 //func 내부는 자유롭게 추가해도 괜찮으나, 아래의 구조를 바꾸지는 마세요
 void func1(int arg1, int arg2, int arg3)
 {
@@ -104,7 +115,17 @@ void func1(int arg1, int arg2, int arg3)
 
     print_stack();
     func2(11, 13);
+
     // func2의 스택 프레임 제거 (함수 에필로그 + pop)
+
+    //함수 에필로그
+    pop();
+    FP = call_stack[SP];
+    pop();
+    pop();
+    pop();
+    pop();
+
     print_stack();
 }
 
@@ -114,9 +135,30 @@ void func2(int arg1, int arg2)
     int var_2 = 200;
 
     // func2의 스택 프레임 형성 (함수 프롤로그 + push)
+
+    // 함수 프롤로그
+    push(values_name[2], arg2);
+    push(values_name[1], arg1);
+    push(values_name[0], -1);
+    push(func_name[0], FP);
+    FP = SP;
+
+    //지역 변수 push
+    push(name[1], var_2);
+
     print_stack();
     func3(77);
+
     // func3의 스택 프레임 제거 (함수 에필로그 + pop)
+
+    //함수 에필로그
+    pop();
+    pop();
+    FP = call_stack[SP];
+    pop();
+    pop();
+    pop();
+
     print_stack();
 }
 
@@ -127,7 +169,19 @@ void func3(int arg1)
     int var_4 = 400;
 
     // func3의 스택 프레임 형성 (함수 프롤로그 + push)
+   
+    // 함수 프롤로그
+    push(values_name[1], arg1);
+    push(values_name[0], -1);
+    push(func_name[0], FP);
+    FP = SP;
+
+    //지역 변수 push
+    push(name[2], var_3);
+    push(name[3], var_4);
+
     print_stack();
+
 }
 
 
@@ -136,6 +190,16 @@ int main()
 {
     func1(1, 2, 3);
     // func1의 스택 프레임 제거 (함수 에필로그 + pop)
+
+    //함수 에필로그
+    pop();
+    FP = call_stack[SP];
+    pop();
+    pop();
+    pop();
+    pop();
+    pop();
+
     print_stack();
     return 0;
 }
