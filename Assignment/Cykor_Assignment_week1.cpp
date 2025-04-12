@@ -21,13 +21,15 @@
     ========================================================================
 */
 #include <stdio.h>
+#include <stdarg.h>
 #define STACK_SIZE 50 // 최대 스택 크기
 
 int     call_stack[STACK_SIZE];         // Call Stack을 저장하는 배열
 char    stack_info[STACK_SIZE][20];     // Call Stack 요소에 대한 설명을 저장하는 배열
-char    values_name[4][20] = { "Return Address" ,"arg1", "arg2", "arg3" };
-char    func_name[3][10] = {"func1 SFP", "func2 SFP" , "func3 SFP" };
-char    name[4][20] = { "var_1", "var_2" , "var_3" , "var_4" };
+int     func_values_info[4][2] = {{0,0},{3,1},{2,1}, {1,2}};    // 함수들의 초기,지역 변수들의 개수 저장 ex) func_values_info[2][1] == fun2의  지역변수 개수 
+char    beginning_values_name_set[4][20] = { "Return Address" ,"arg1", "arg2", "arg3" };
+char    func_name_set[3][10] = {"func1 SFP", "func2 SFP" , "func3 SFP" };
+char    local_value_name_set[5][20] = { "null","var_1", "var_2" , "var_3" , "var_4"};
 
 /*  SP (Stack Pointer), FP (Frame Pointer)
 
@@ -42,6 +44,7 @@ int FP = -1;
 
 void push(char name[20], int value);
 void pop();
+void func_prologue(int fun_num, ...);
 void func1(int arg1, int arg2, int arg3);
 void func2(int arg1, int arg2);
 void func3(int arg1);
@@ -95,23 +98,46 @@ void pop() {
     SP -= 1;
 }
 
+void func_prologue(int fun_num, ...) {
+
+    int total = func_values_info[fun_num][0] + func_values_info[fun_num][1];
+    va_list values;
+    va_start(values, total);
+
+    for (int i = func_values_info[fun_num][0]; i >= 0; i--) {
+        int  beginning_value = (i != 0) ? va_arg(values, int) : -1;
+        printf("%d \n", beginning_value);
+        push(beginning_values_name_set[i], beginning_value);
+    }
+
+    FP = SP;
+
+    for (int i = func_values_info[fun_num][1]; i > 0; i--) {
+        push(local_value_name_set[0], va_arg(values, int));
+    }
+
+    va_end(values);
+}
+
 //func 내부는 자유롭게 추가해도 괜찮으나, 아래의 구조를 바꾸지는 마세요
 void func1(int arg1, int arg2, int arg3)
 {
     int var_1 = 100;
 
     // func1의 스택 프레임 형성 (함수 프롤로그 + push)
-
+    
     // 함수 프롤로그
-    push(values_name[3], arg3);
-    push(values_name[2], arg2);
-    push(values_name[1], arg1);
-    push(values_name[0], -1);
-    push(func_name[0], -1);
+    push(beginning_values_name_set[3], arg3);
+    push(beginning_values_name_set[2], arg2);
+    push(beginning_values_name_set[1], arg1);
+    push(beginning_values_name_set[0], -1);
+    push(func_name_set[0], -1);
     FP = SP;
 
     //지역 변수 push
-    push(name[0], var_1);
+    push(local_value_name_set[1], var_1);
+    
+    //func_prologue(1,arg3,arg2,arg1,var_1);
 
     print_stack();
     func2(11, 13);
@@ -137,14 +163,14 @@ void func2(int arg1, int arg2)
     // func2의 스택 프레임 형성 (함수 프롤로그 + push)
 
     // 함수 프롤로그
-    push(values_name[2], arg2);
-    push(values_name[1], arg1);
-    push(values_name[0], -1);
-    push(func_name[0], FP);
+    push(beginning_values_name_set[2], arg2);
+    push(beginning_values_name_set[1], arg1);
+    push(beginning_values_name_set[0], -1);
+    push(func_name_set[1], FP);
     FP = SP;
 
     //지역 변수 push
-    push(name[1], var_2);
+    push(local_value_name_set[2], var_2);
 
     print_stack();
     func3(77);
@@ -171,14 +197,14 @@ void func3(int arg1)
     // func3의 스택 프레임 형성 (함수 프롤로그 + push)
    
     // 함수 프롤로그
-    push(values_name[1], arg1);
-    push(values_name[0], -1);
-    push(func_name[0], FP);
+    push(beginning_values_name_set[1], arg1);
+    push(beginning_values_name_set[0], -1);
+    push(func_name_set[2], FP);
     FP = SP;
 
     //지역 변수 push
-    push(name[2], var_3);
-    push(name[3], var_4);
+    push(local_value_name_set[3], var_3);
+    push(local_value_name_set[4], var_4);
 
     print_stack();
 
