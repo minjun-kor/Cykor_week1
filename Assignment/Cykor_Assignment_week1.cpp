@@ -98,7 +98,6 @@ void pop() {
 
 void func_prologue(int fun_num, ...) {
 
-    int total = func_values_info[fun_num][0] + func_values_info[fun_num][1];
     va_list values;
     va_start(values, fun_num);
 
